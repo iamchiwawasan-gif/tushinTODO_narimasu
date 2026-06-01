@@ -331,6 +331,35 @@
       opacity: .65;
     }
 
+
+    .ad-title-block {
+      display: block;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 12px;
+      margin-bottom: 10px;
+    }
+
+    .ad-title-label {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .ad-title {
+      display: block !important;
+      color: var(--text) !important;
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 1.5;
+      min-height: 1.5em;
+      word-break: break-word;
+      white-space: normal;
+    }
+
     .ad-head {
       display: flex;
       justify-content: space-between;
@@ -971,8 +1000,11 @@
 
         card.innerHTML = `
           <div class="ad-head">
-            <div>
-              <div class="ad-title"></div>
+            <div style="width:100%;">
+              <div class="ad-title-block">
+                <span class="ad-title-label">タイトル</span>
+                <div class="ad-title"></div>
+              </div>
               <div class="badges">
                 <span class="badge ref">${escapeHtml(task.ref || "その他")}</span>
                 ${task.noDate ? `<span class="badge ref">No/日付：${escapeHtml(task.noDate)}</span>` : ""}
@@ -994,7 +1026,7 @@
         `;
 
         const titleEl = card.querySelector(".ad-title");
-        titleEl.textContent = task.title || "無題";
+        titleEl.textContent = task.title || task.noDate || "無題";
 
         const progressMemoEl = card.querySelector(".progress-memo");
         progressMemoEl.value = task.progressMemo || "";
@@ -1036,7 +1068,7 @@
         });
 
         card.querySelector(".delete-btn").addEventListener("click", async () => {
-          if (!confirm(`「${task.title || "無題"}」を削除しますか？`)) return;
+          if (!confirm(`「${task.title || task.noDate || "無題"}」を削除しますか？`)) return;
           await deleteDoc(doc(adhocColRef, task.id));
           showToast("削除しました");
         });
