@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>通信TODO管理表</title>
+  <title>通信TODO管理表 v2</title>
   <style>
     :root {
       --bg: #eef2f7;
@@ -394,6 +394,7 @@
       font-weight: 900;
     }
 
+    .badge.title { background: #f1f5f9; color: #0f172a; border: 1px solid #cbd5e1; }
     .badge.ref { background: #dbeafe; color: #1d4ed8; }
     .badge.due { background: #e0f2fe; color: #075985; }
     .badge.staff { background: #ede9fe; color: #5b21b6; }
@@ -1006,6 +1007,7 @@
                 <div class="ad-title"></div>
               </div>
               <div class="badges">
+                <span class="badge title">タイトル：${escapeHtml(task.title || task.noDate || "無題")}</span>
                 <span class="badge ref">${escapeHtml(task.ref || "その他")}</span>
                 ${task.noDate ? `<span class="badge ref">No/日付：${escapeHtml(task.noDate)}</span>` : ""}
                 <span class="badge due">期限：${formatDate(task.due)}</span>
