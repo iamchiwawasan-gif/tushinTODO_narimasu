@@ -372,6 +372,38 @@
     .badge.done { background: #dcfce7; color: #166534; }
     .badge.today { background: #fee2e2; color: #b91c1c; }
 
+
+    .progress-area {
+      margin-top: 12px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .progress-label {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 900;
+      margin-left: 4px;
+    }
+
+    .progress-memo {
+      width: 100%;
+      min-height: 72px;
+      border: 1px solid var(--line);
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 12px;
+      outline: none;
+      resize: vertical;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .progress-memo:focus {
+      border-color: #64748b;
+      background: #fff;
+    }
+
     .ad-controls {
       display: grid;
       grid-template-columns: 150px 150px auto;
@@ -881,6 +913,7 @@
           due,
           assignee,
           completed: assignee !== "未実施",
+          progressMemo: "",
           createdAt: serverTimestamp(),
           createdAtClient: Date.now(),
           updatedAt: serverTimestamp()
@@ -949,6 +982,10 @@
               </div>
             </div>
           </div>
+          <div class="progress-area">
+            <label class="progress-label">進捗メモ</label>
+            <textarea class="progress-memo" placeholder="対応状況・引き継ぎ内容などを入力"></textarea>
+          </div>
           <div class="ad-controls">
             <div class="assignee-wrap"></div>
             <button class="secondary-btn toggle-btn">${done ? "未完了に戻す" : "完了にする"}</button>
@@ -956,7 +993,27 @@
           </div>
         `;
 
-        card.querySelector(".ad-title").textContent = task.title || "無題";
+        const titleEl = card.querySelector(".ad-title");
+        titleEl.textContent = task.title || "無題";
+
+        const progressMemoEl = card.querySelector(".progress-memo");
+        progressMemoEl.value = task.progressMemo || "";
+        progressMemoEl.addEventListener("change", async () => {
+          await updateDoc(doc(adhocColRef, task.id), {
+            progressMemo: progressMemoEl.value,
+            updatedAt: serverTimestamp()
+          });
+          showToast("進捗メモを保存しました");
+        });
+        progressMemoEl.addEventListener("blur", async () => {
+          if ((task.progressMemo || "") !== progressMemoEl.value) {
+            await updateDoc(doc(adhocColRef, task.id), {
+              progressMemo: progressMemoEl.value,
+              updatedAt: serverTimestamp()
+            });
+            showToast("進捗メモを保存しました");
+          }
+        });
 
         const select = createStaffSelect(task.assignee || "未実施", async (value) => {
           await updateDoc(doc(adhocColRef, task.id), {
